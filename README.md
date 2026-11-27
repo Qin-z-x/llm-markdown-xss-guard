@@ -188,6 +188,13 @@ code-block preservation check and both expected outcomes of the `--fail-on high`
 `<img onerror>` 会真实执行并写入无害标记）与 `docs/demo_clean.html`（清理后不再执行）；
 无头 Edge 检查见 `docs/screenshots/terminal_browser.txt`。真实输出与哈希见
 [`docs/EVIDENCE.md`](docs/EVIDENCE.md)。本项目是防御工具与本地演示，不声称发现新漏洞或新 CVE。
+
+## 视频演示
+
+B站：https://www.bilibili.com/video/BV1BE1pztEmt（64 秒）
+
+视频使用本仓库自带的合成/无害样例与真实命令输出；本项目是启发式检测工具，边界见上文说明。
+
 ## License
 
 MIT -- see [LICENSE](LICENSE). Prior art acknowledged: OWASP XSS prevention, DOMPurify, and public
