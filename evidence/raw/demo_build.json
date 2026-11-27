@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "marker": "XSS-EXECUTED-7C1A",
+  "assertions": {
+    "poisoned_executable_handler": true,
+    "poisoned_contains_script_tag": true,
+    "clean_executable_handler": false,
+    "clean_contains_script_tag": false,
+    "poisoned_findings": 7,
+    "poisoned_high": 7,
+    "cleaned_findings": 0,
+    "marker": "XSS-EXECUTED-7C1A",
+    "pass": true
+  },
+  "pages": {
+    "docs/demo_chat.html": {
+      "sha256": "e0afd2cf1e4e4b66ff524da7fe18b78be7d05ece625f62860b9c2a53ff4c7297",
+      "bytes": 3052
+    },
+    "docs/demo_clean.html": {
+      "sha256": "83ecb58b3f9e596658013b9e0b99a1a1f6a0e565767d0aa4db8c4a552f2660fb",
+      "bytes": 2561
+    }
+  },
+  "cleaned_markdown_sha256": "32a2b21763a141ec020ba9383c5d101ec456dc4636c518b882720e1b13511bb2"
+}

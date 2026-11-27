@@ -1,0 +1,11 @@
+$ python -m mdxss_guard scan examples/poisoned_render.md
+mdxss-guard 0.1.0  scan  examples/poisoned_render.md  (24 lines, 1080 chars)
+HIGH   MDX-EVENT-HANDLER    line 5    col 1    Inline event handler attribute 'onerror' on <img>
+HIGH   MDX-SCRIPT           line 7    col 1    Inline <script> element in rendered Markdown executes JavaScript
+HIGH   MDX-JS-URL           line 9    col 32   Markdown link destination uses a javascript: URL
+HIGH   MDX-JS-URL           line 11   col 1    href attribute uses a javascript:/vbscript: URL
+HIGH   MDX-FRAME            line 13   col 1    <iframe> is an active content container
+HIGH   MDX-EVENT-HANDLER    line 15   col 1    Inline event handler attribute 'onload' on <svg>
+HIGH   MDX-SVG              line 15   col 1    <svg> can carry active content (script, onload)
+summary: 7 finding(s): 7 high, 0 medium, 0 low
+[exit code: 0]

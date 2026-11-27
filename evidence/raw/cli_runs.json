@@ -1,0 +1,118 @@
+{
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.15",
+    "package_version": "0.1.0",
+    "captured_at_utc": "2026-11-27T00:46:09Z",
+    "command_count": 9,
+    "test_count": 38,
+    "tests_ok": true
+  },
+  "runs": [
+    {
+      "index": 0,
+      "label": "scan the poisoned model output",
+      "command": "python -m mdxss_guard scan examples/poisoned_render.md",
+      "exit_code": 0,
+      "stdout": "mdxss-guard 0.1.0  scan  examples/poisoned_render.md  (24 lines, 1080 chars)\nHIGH   MDX-EVENT-HANDLER    line 5    col 1    Inline event handler attribute 'onerror' on <img>\nHIGH   MDX-SCRIPT           line 7    col 1    Inline <script> element in rendered Markdown executes JavaScript\nHIGH   MDX-JS-URL           line 9    col 32   Markdown link destination uses a javascript: URL\nHIGH   MDX-JS-URL           line 11   col 1    href attribute uses a javascript:/vbscript: URL\nHIGH   MDX-FRAME            line 13   col 1    <iframe> is an active content container\nHIGH   MDX-EVENT-HANDLER    line 15   col 1    Inline event handler attribute 'onload' on <svg>\nHIGH   MDX-SVG              line 15   col 1    <svg> can carry active content (script, onload)\nsummary: 7 finding(s): 7 high, 0 medium, 0 low\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 1,
+      "label": "machine-readable scan",
+      "command": "python -m mdxss_guard scan examples/poisoned_render.md --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"tool\": \"mdxss-guard\",\n  \"version\": \"0.1.0\",\n  \"summary\": {\n    \"total\": 7,\n    \"counts\": {\n      \"low\": 0,\n      \"medium\": 0,\n      \"high\": 7\n    },\n    \"max_severity\": \"high\"\n  },\n  \"clean\": false,\n  \"findings\": [\n    {\n      \"code\": \"MDX-EVENT-HANDLER\",\n      \"severity\": \"high\",\n      \"message\": \"Inline event handler attribute 'onerror' on <img>\",\n      \"line\": 5,\n      \"column\": 1,\n      \"fix\": \"Strip every on* attribute and attach behaviour in application code, never through model-supplied HTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-SCRIPT\",\n      \"severity\": \"high\",\n      \"message\": \"Inline <script> element in rendered Markdown executes JavaScript\",\n      \"line\": 7,\n      \"column\": 1,\n      \"fix\": \"Remove the <script> element or render the answer as text in a sandboxed frame; never insert model output with innerHTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-JS-URL\",\n      \"severity\": \"high\",\n      \"message\": \"Markdown link destination uses a javascript: URL\",\n      \"line\": 9,\n      \"column\": 32,\n      \"fix\": \"Allow only http(s):, mailto: and relative URLs; reject javascript:, vbscript: and data: link destinations.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-JS-URL\",\n      \"severity\": \"high\",\n      \"message\": \"href attribute uses a javascript:/vbscript: URL\",\n      \"line\": 11,\n      \"column\": 1,\n      \"fix\": \"Allow only http(s):, mailto: and relative URLs; reject javascript:, vbscript: and data: link destinations.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-FRAME\",\n      \"severity\": \"high\",\n      \"message\": \"<iframe> is an active content container\",\n      \"line\": 13,\n      \"column\": 1,\n      \"fix\": \"Drop active containers (iframe/object/embed/frame/applet); use a vetted embed component with a URL allowlist instead.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-EVENT-HANDLER\",\n      \"severity\": \"high\",\n      \"message\": \"Inline event handler attribute 'onload' on <svg>\",\n      \"line\": 15,\n      \"column\": 1,\n      \"fix\": \"Strip every on* attribute and attach behaviour in application code, never through model-supplied HTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-SVG\",\n      \"severity\": \"high\",\n      \"message\": \"<svg> can carry active content (script, onload)\",\n      \"line\": 15,\n      \"column\": 1,\n      \"fix\": \"Render SVG as an image through a dedicated sanitizer or strip it; SVG and MathML can carry script and event handlers.\",\n      \"data\": {}\n    }\n  ],\n  \"path\": \"examples/poisoned_render.md\"\n}\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 2,
+      "label": "CI gate at high severity",
+      "command": "python -m mdxss_guard scan examples/poisoned_render.md --fail-on high",
+      "exit_code": 1,
+      "stdout": "mdxss-guard 0.1.0  scan  examples/poisoned_render.md  (24 lines, 1080 chars)\nHIGH   MDX-EVENT-HANDLER    line 5    col 1    Inline event handler attribute 'onerror' on <img>\nHIGH   MDX-SCRIPT           line 7    col 1    Inline <script> element in rendered Markdown executes JavaScript\nHIGH   MDX-JS-URL           line 9    col 32   Markdown link destination uses a javascript: URL\nHIGH   MDX-JS-URL           line 11   col 1    href attribute uses a javascript:/vbscript: URL\nHIGH   MDX-FRAME            line 13   col 1    <iframe> is an active content container\nHIGH   MDX-EVENT-HANDLER    line 15   col 1    Inline event handler attribute 'onload' on <svg>\nHIGH   MDX-SVG              line 15   col 1    <svg> can carry active content (script, onload)\nsummary: 7 finding(s): 7 high, 0 medium, 0 low\n",
+      "stderr": "FAIL: 7 finding(s) at or above severity 'high'\n",
+      "expect_exit": 1
+    },
+    {
+      "index": 3,
+      "label": "clean the poisoned model output",
+      "command": "python -m mdxss_guard clean examples/poisoned_render.md -o evidence/raw/cleaned_render.md",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "wrote evidence/raw/cleaned_render.md (mode=strip, findings before=7, after=0)\n",
+      "expect_exit": null
+    },
+    {
+      "index": 4,
+      "label": "rescan the cleaned output with the strictest gate",
+      "command": "python -m mdxss_guard scan evidence/raw/cleaned_render.md --fail-on low",
+      "exit_code": 0,
+      "stdout": "mdxss-guard 0.1.0  scan  evidence/raw/cleaned_render.md  (24 lines, 564 chars)\nsummary: 0 finding(s): 0 high, 0 medium, 0 low\nPASS: no finding at or above severity 'low'\n",
+      "stderr": "",
+      "expect_exit": 0
+    },
+    {
+      "index": 5,
+      "label": "scan the benign model output",
+      "command": "python -m mdxss_guard scan examples/clean_render.md",
+      "exit_code": 0,
+      "stdout": "mdxss-guard 0.1.0  scan  examples/clean_render.md  (16 lines, 422 chars)\nsummary: 0 finding(s): 0 high, 0 medium, 0 low\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 6,
+      "label": "findings report with fixes",
+      "command": "python -m mdxss_guard report examples/poisoned_render.md --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"tool\": \"mdxss-guard\",\n  \"version\": \"0.1.0\",\n  \"summary\": {\n    \"total\": 7,\n    \"counts\": {\n      \"low\": 0,\n      \"medium\": 0,\n      \"high\": 7\n    },\n    \"max_severity\": \"high\"\n  },\n  \"clean\": false,\n  \"findings\": [\n    {\n      \"code\": \"MDX-EVENT-HANDLER\",\n      \"severity\": \"high\",\n      \"message\": \"Inline event handler attribute 'onerror' on <img>\",\n      \"line\": 5,\n      \"column\": 1,\n      \"fix\": \"Strip every on* attribute and attach behaviour in application code, never through model-supplied HTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-SCRIPT\",\n      \"severity\": \"high\",\n      \"message\": \"Inline <script> element in rendered Markdown executes JavaScript\",\n      \"line\": 7,\n      \"column\": 1,\n      \"fix\": \"Remove the <script> element or render the answer as text in a sandboxed frame; never insert model output with innerHTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-JS-URL\",\n      \"severity\": \"high\",\n      \"message\": \"Markdown link destination uses a javascript: URL\",\n      \"line\": 9,\n      \"column\": 32,\n      \"fix\": \"Allow only http(s):, mailto: and relative URLs; reject javascript:, vbscript: and data: link destinations.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-JS-URL\",\n      \"severity\": \"high\",\n      \"message\": \"href attribute uses a javascript:/vbscript: URL\",\n      \"line\": 11,\n      \"column\": 1,\n      \"fix\": \"Allow only http(s):, mailto: and relative URLs; reject javascript:, vbscript: and data: link destinations.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-FRAME\",\n      \"severity\": \"high\",\n      \"message\": \"<iframe> is an active content container\",\n      \"line\": 13,\n      \"column\": 1,\n      \"fix\": \"Drop active containers (iframe/object/embed/frame/applet); use a vetted embed component with a URL allowlist instead.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-EVENT-HANDLER\",\n      \"severity\": \"high\",\n      \"message\": \"Inline event handler attribute 'onload' on <svg>\",\n      \"line\": 15,\n      \"column\": 1,\n      \"fix\": \"Strip every on* attribute and attach behaviour in application code, never through model-supplied HTML.\",\n      \"data\": {}\n    },\n    {\n      \"code\": \"MDX-SVG\",\n      \"severity\": \"high\",\n      \"message\": \"<svg> can carry active content (script, onload)\",\n      \"line\": 15,\n      \"column\": 1,\n      \"fix\": \"Render SVG as an image through a dedicated sanitizer or strip it; SVG and MathML can carry script and event handlers.\",\n      \"data\": {}\n    }\n  ]\n}\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 7,
+      "label": "build the demo chat pages",
+      "command": "python scripts/build_demo.py",
+      "exit_code": 0,
+      "stdout": "poisoned page : docs/demo_chat.html  findings=7 high=7  sha256=e0afd2cf1e4e4b66\ncleaned page  : docs/demo_clean.html  findings=0  sha256=83ecb58b3f9e5966\nassertions    : handler_in_poisoned=True handler_in_clean=False script_in_poisoned=True script_in_clean=False\nresult        : PASS\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 8,
+      "label": "headless browser check",
+      "command": "python scripts/browser_check.py",
+      "exit_code": 0,
+      "stdout": "browser       : C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\npoisoned page : marker in DOM = True\ncleaned page  : marker in DOM = False\nresult        : PASS\n",
+      "stderr": "",
+      "expect_exit": null
+    }
+  ],
+  "examples": [
+    {
+      "path": "examples/poisoned_render.md",
+      "bytes": 1080,
+      "sha256": "44951c8bc607e7bf3a73744f37409cdb5081e441eae1becfa692ce3389bc701e"
+    },
+    {
+      "path": "examples/clean_render.md",
+      "bytes": 422,
+      "sha256": "46f344b052c9bd69466302032603d7fadf037940ed8d812a91aae7865d3551d3"
+    }
+  ],
+  "extra_files": [
+    {
+      "path": "docs/demo_chat.html",
+      "bytes": 3052,
+      "sha256": "e0afd2cf1e4e4b66ff524da7fe18b78be7d05ece625f62860b9c2a53ff4c7297"
+    },
+    {
+      "path": "docs/demo_clean.html",
+      "bytes": 2561,
+      "sha256": "83ecb58b3f9e596658013b9e0b99a1a1f6a0e565767d0aa4db8c4a552f2660fb"
+    }
+  ]
+}

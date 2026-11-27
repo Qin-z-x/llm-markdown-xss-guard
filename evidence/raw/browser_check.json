@@ -1,0 +1,13 @@
+{
+  "browser": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "marker": "XSS-EXECUTED-7C1A",
+  "poisoned_page": {
+    "marker_in_dom": true,
+    "dom_bytes": 3074
+  },
+  "cleaned_page": {
+    "marker_in_dom": false,
+    "dom_bytes": 2561
+  },
+  "result": "PASS"
+}

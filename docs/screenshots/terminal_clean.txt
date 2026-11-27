@@ -1,0 +1,5 @@
+$ python -m mdxss_guard clean examples/poisoned_render.md -o evidence/raw/cleaned_render.md
+
+[stderr]
+wrote evidence/raw/cleaned_render.md (mode=strip, findings before=7, after=0)
+[exit code: 0]

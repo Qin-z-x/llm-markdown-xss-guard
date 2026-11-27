@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Core must be standard-library only
+        run: python scripts/check_core_deps.py
+
+      - name: Unit tests (unittest, no third-party dependencies)
+        run: python -m unittest discover -s tests -t .
+
+      - name: CLI smoke test: JSON scan finds the injected XSS carriers
+        run: python -m mdxss_guard scan examples/poisoned_render.md --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['high'] >= 3, d['summary']; print('findings:', d['summary'])"
+
+      - name: Sanitizer removes every XSS carrier and the cleaned output scans clean
+        run: |
+          python -m mdxss_guard clean examples/poisoned_render.md -o cleaned.md
+          python -m mdxss_guard scan cleaned.md --fail-on low
+          ! grep -qiE "onerror|javascript:|data:text/html|<script" cleaned.md
+
+      - name: Code blocks are preserved and never flagged
+        run: |
+          python -m mdxss_guard scan examples/clean_render.md --fail-on low
+          python -c "import pathlib; from mdxss_guard import clean, scan; src=pathlib.Path('examples/poisoned_render.md').read_text(encoding='utf-8'); fence='```html\n<script>x</script>\n```'; out=clean(fence); assert out == fence, 'code fence changed'; assert scan(out) == []; print('code fence untouched')"
+
+      - name: CI gate catches the poisoned example (expected exit code 1)
+        run: |
+          set +e
+          python -m mdxss_guard scan examples/poisoned_render.md --fail-on high
+          code=$?
+          set -e
+          echo "scan exit code: $code"
+          test "$code" -eq 1

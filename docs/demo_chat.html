@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>poisoned transcript - llm-markdown-xss-guard demo</title>
+<style>
+  :root { color-scheme: dark; }
+  body { background: #111417; color: #e6edf3; font: 15px/1.55 "Segoe UI", system-ui, sans-serif; margin: 0; padding: 24px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  .top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .badge { font: 12px ui-monospace, monospace; background: #1f6feb33; border: 1px solid #1f6feb; color: #79c0ff; border-radius: 999px; padding: 2px 10px; }
+  .alert { border-radius: 8px; padding: 12px 14px; margin: 12px 0 20px; border: 1px solid #3d444d; background: #161b22; color: #8b949e; font-family: ui-monospace, monospace; font-size: 13px; }
+  .alert.fired { border-color: #f85149; background: #f851491f; color: #ff7b72; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px 24px; }
+  .card h1, .card h2 { border-bottom: 1px solid #30363d; padding-bottom: 6px; }
+  a { color: #58a6ff; }
+  code { background: #21262d; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  pre.code { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 12px; overflow-x: auto; }
+  .meta { color: #8b949e; font-size: 13px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><strong>llm-markdown-xss-guard</strong><span class="badge">UNSANITIZED raw HTML</span></div>
+  <p class="meta">This is a model answer rendered with raw HTML enabled (a permissive chat UI). The injected payload is harmless: it only writes a marker into the red panel above.</p>
+  <div id="xss-alert" class="alert">No script executed.</div>
+  <div class="card">
+<h1>Release notes (model-generated answer)</h1>
+<p>Here is the changelog summary you asked for. The <code>deploy.sh</code> script was updated and the API is stable.</p>
+<img src=x onerror="document.getElementById('xss-alert').textContent='XSS-EXECUTED-7C1A: onerror handler ran';document.getElementById('xss-alert').classList.add('fired')">
+<script>document.getElementById('xss-alert').textContent='XSS-EXECUTED-7C1A: script tag ran';document.getElementById('xss-alert').classList.add('fired');</script>
+<p><a href="javascript:alert(document.cookie">Click here for the full report</a>)</p>
+<a href="javascript:alert(1)">Raw HTML link</a>
+<iframe src="about:blank"></iframe>
+<svg onload="document.getElementById('xss-alert').textContent='XSS-EXECUTED-7C1A: svg onload ran';document.getElementById('xss-alert').classList.add('fired')"></svg>
+<p>A benign inline element like <strong>bold</strong> and a <a href="https://example.com/docs">safe link</a> is fine.</p>
+<p>The protected snippet below must never be touched by the sanitizer:</p>
+<pre class='code'><code>&lt;script&gt;console.log("legit example in docs")&lt;/script&gt;
+&lt;img src=x onerror=alert(1)&gt;</code></pre>
+  </div>
+  <p class="meta">Built by scripts/build_demo.py from examples/poisoned_render.md. Version 0.1.0.</p>
+</div>
+</body>
+</html>

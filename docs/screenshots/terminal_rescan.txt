@@ -1,0 +1,5 @@
+$ python -m mdxss_guard scan evidence/raw/cleaned_render.md --fail-on low
+mdxss-guard 0.1.0  scan  evidence/raw/cleaned_render.md  (24 lines, 564 chars)
+summary: 0 finding(s): 0 high, 0 medium, 0 low
+PASS: no finding at or above severity 'low'
+[exit code: 0]
