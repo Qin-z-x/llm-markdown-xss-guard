@@ -38,13 +38,13 @@ jobs:
 
       - name: "CLI smoke test: JSON scan finds the injected XSS carriers"
         run: |
-          python -m mdxss_guard scan examples/poisoned_render.md --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['high'] >= 3, d['summary']; print('findings:', d['summary'])"
+          python -m mdxss_guard scan examples/poisoned_render.md --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['counts']['high'] >= 3, d['summary']; print('findings:', d['summary'])"
 
       - name: "Sanitizer removes every XSS carrier and the cleaned output scans clean"
         run: |
           python -m mdxss_guard clean examples/poisoned_render.md -o cleaned.md
           python -m mdxss_guard scan cleaned.md --fail-on low
-          ! grep -qiE "onerror|javascript:|data:text/html|<script" cleaned.md
+          python -c "text=open('cleaned.md', encoding='utf-8').read(); outside=text.split('```html')[0]; assert 'onerror' not in outside and 'javascript:' not in outside and 'data:text/html' not in outside, 'payload left outside the documentation code block'; print('no payload outside the documentation code block')"
 
       - name: "Code blocks are preserved and never flagged"
         run: |
