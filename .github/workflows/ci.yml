@@ -44,12 +44,12 @@ jobs:
         run: |
           python -m mdxss_guard clean examples/poisoned_render.md -o cleaned.md
           python -m mdxss_guard scan cleaned.md --fail-on low
-          python -c "text=open('cleaned.md', encoding='utf-8').read(); outside=text.split('```html')[0]; assert 'onerror' not in outside and 'javascript:' not in outside and 'data:text/html' not in outside, 'payload left outside the documentation code block'; print('no payload outside the documentation code block')"
+          python -c "text=open('cleaned.md', encoding='utf-8').read(); outside=text.split(chr(96)*3 + 'html')[0]; assert 'onerror' not in outside and 'javascript:' not in outside and 'data:text/html' not in outside, 'payload left outside the documentation code block'; print('no payload outside the documentation code block')"
 
       - name: "Code blocks are preserved and never flagged"
         run: |
           python -m mdxss_guard scan examples/clean_render.md --fail-on low
-          python -c "import pathlib; from mdxss_guard import clean, scan; src=pathlib.Path('examples/poisoned_render.md').read_text(encoding='utf-8'); fence='```html\n<script>x</script>\n```'; out=clean(fence); assert out == fence, 'code fence changed'; assert scan(out) == []; print('code fence untouched')"
+          python -c "import pathlib; from mdxss_guard import clean, scan; src=pathlib.Path('examples/poisoned_render.md').read_text(encoding='utf-8'); fence=(chr(96)*3)+'html\n<script>x</script>\n'+(chr(96)*3); out=clean(fence); assert out == fence, 'code fence changed'; assert scan(out) == []; print('code fence untouched')"
 
       - name: "CI gate catches the poisoned example (expected exit code 1)"
         run: |
